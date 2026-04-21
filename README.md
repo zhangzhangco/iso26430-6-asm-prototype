@@ -2,14 +2,14 @@
 
 Protocol-aligned C++ reference implementation of Auditorium Security Messages (ASM) from `ISO 26430-6:2009(E)` for D-Cinema intra-theater communications.
 
-这个仓库提供一个面向 `ISO 26430-6:2009(E)` 的 ASM 标准对齐原型，重点覆盖 Auditorium Security Messages 在线协议层的关键约束与命令语义，实现重点是：
+这个仓库提供一个面向 `ISO 26430-6:2009(E)` 的 ASM 参考实现，重点覆盖 Auditorium Security Messages 在线协议层的关键约束与命令语义，实现重点是：
 
 - 按 Annex A 的命令 UL 编码 Request/Response
 - 使用固定 4-byte long-form BER Length
 - 在 `1173` 端口上跑同步 `Request-Response Pair`
 - 用双向 TLS 1.0 + `TLS_RSA_WITH_AES_128_CBC_SHA`
 - 覆盖通用命令和 `LEKey*` 命令的最小标准语义
-- 用单元测试、协议黄金向量和 TLS 集成测试做回归
+- 用单元测试、标准报文样例和 TLS 集成测试做回归
 
 当前实现是“协议级对齐原型”，不是生产级影院实现。它已经对齐了标准帧格式、命令字段和主要约束，但仍保留 mock 后端，并且没有宣称完全满足 D-Cinema 证书 profile。
 
@@ -195,5 +195,7 @@ LE key 文件每行一个对象：
 ## 参考文档
 
 - 约束矩阵：`docs/constraints.md`
-- 协议黄金向量：`docs/protocol-vectors.md`
+- 标准报文样例：`docs/protocol-vectors.md`
 - 实现说明：`docs/iso26430-6-asm-implementation.md`
+- Beamer 讲稿源文件：`docs/beamer/iso26430-6-asm-standard-intro.tex`
+- Beamer 讲稿 PDF：[`docs/beamer/iso26430-6-asm-standard-intro.pdf`](docs/beamer/iso26430-6-asm-standard-intro.pdf)

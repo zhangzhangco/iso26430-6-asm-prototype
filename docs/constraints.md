@@ -22,7 +22,7 @@
 | 命令 | LE 命令 | `LEKeyLoad` / `LEKeyQueryID` / `LEKeyQueryAll` / `LEKeyPurgeID` / `LEKeyPurgeAll` |
 | 架构 | 可注入事件日志源 | `EventLogStore` 支持按时间窗列举和按 `event_id` 取 XML |
 | 架构 | 可注入 LE key store | `LeKeyStore` 支持 `JSONL` 持久化与 16-key 容量约束 |
-| 验证 | 字节级回归 | 协议黄金向量、服务测试、TLS 集成测试全覆盖 |
+| 验证 | 字节级回归 | 标准报文样例、服务测试、TLS 集成测试全覆盖 |
 
 ## 当前命令语义
 
