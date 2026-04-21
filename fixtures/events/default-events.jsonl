@@ -1,0 +1,3 @@
+{"event_id":1001,"severity":"info","timestamp":"2026-04-21T08:00:00Z","summary":"Responder started"}
+{"event_id":1002,"severity":"warning","timestamp":"2026-04-21T08:05:00Z","summary":"TLS profile uses development CA"}
+{"event_id":1003,"severity":"error","timestamp":"2026-04-21T08:10:00Z","summary":"Link encryption material not loaded"}

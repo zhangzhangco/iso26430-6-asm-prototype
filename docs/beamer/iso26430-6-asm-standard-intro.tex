@@ -1,0 +1,636 @@
+\documentclass[aspectratio=169,11pt,UTF8,fontset=none]{ctexbeamer}
+
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usetikzlibrary{positioning,calc}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{blocks}[rounded]
+\setbeamersize{text margin left=0.8cm,text margin right=0.8cm}
+
+\definecolor{BrandRed}{HTML}{AA2E25}
+\definecolor{BrandInk}{HTML}{17202A}
+\definecolor{BrandBlue}{HTML}{174A7C}
+\definecolor{BrandCyan}{HTML}{0E7490}
+\definecolor{BrandGold}{HTML}{B98528}
+\definecolor{Paper}{HTML}{F6F2EA}
+\definecolor{Card}{HTML}{FFFDF8}
+\definecolor{Soft}{HTML}{DED7CB}
+\definecolor{Mute}{HTML}{5B6472}
+
+\setbeamercolor{normal text}{fg=BrandInk,bg=Paper}
+\setbeamercolor{structure}{fg=BrandRed}
+\setbeamercolor{frametitle}{fg=BrandInk,bg=Paper}
+\setbeamercolor{title}{fg=BrandInk}
+\setbeamercolor{subtitle}{fg=BrandBlue}
+\setbeamercolor{block title}{fg=white,bg=BrandBlue}
+\setbeamercolor{block body}{fg=BrandInk,bg=white}
+\setbeamercolor{itemize item}{fg=BrandRed}
+\setbeamercolor{itemize subitem}{fg=BrandBlue}
+
+\setCJKmainfont[
+  Path=/usr/local/texlive/2025basic/texmf-dist/fonts/opentype/public/fandol/,
+  UprightFont=FandolSong-Regular.otf,
+  BoldFont=FandolSong-Bold.otf
+]{FandolSong-Regular.otf}
+\setCJKsansfont[
+  Path=/usr/local/texlive/2025basic/texmf-dist/fonts/opentype/public/fandol/,
+  UprightFont=FandolHei-Regular.otf,
+  BoldFont=FandolHei-Bold.otf
+]{FandolHei-Regular.otf}
+\setCJKmonofont[
+  Path=/usr/local/texlive/2025basic/texmf-dist/fonts/opentype/public/fandol/,
+  UprightFont=FandolFang-Regular.otf
+]{FandolFang-Regular.otf}
+\setsansfont{Helvetica}
+\setmonofont{Courier}
+
+\newcommand{\Code}[1]{{\ttfamily\small #1}}
+\newcommand{\Path}[1]{{\ttfamily\footnotesize #1}}
+
+\newcommand{\FrameAccent}{
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[BrandRed] (current page.north west) rectangle ([yshift=-0.18cm]current page.north east);
+    \fill[BrandGold] ([yshift=0.18cm]current page.south west) rectangle (current page.south east);
+  \end{tikzpicture}
+}
+
+\newcommand{\TopTag}[1]{
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[
+      anchor=north east,
+      rounded corners=8pt,
+      fill=BrandInk,
+      text=white,
+      inner xsep=10pt,
+      inner ysep=5pt
+    ] at ([xshift=-0.7cm,yshift=-0.55cm]current page.north east) {\small #1};
+  \end{tikzpicture}
+}
+
+\newcommand{\SectionPage}[2]{
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[BrandInk] (current page.south west) rectangle (current page.north east);
+      \fill[BrandRed] (current page.south west) rectangle ([xshift=0.34\paperwidth]current page.north west);
+      \fill[BrandGold,opacity=0.14] ([xshift=0.6\paperwidth,yshift=0.16\paperheight]current page.south west) circle (1.9cm);
+      \fill[white,opacity=0.07] ([xshift=0.8\paperwidth,yshift=0.75\paperheight]current page.south west) circle (1.35cm);
+    \end{tikzpicture}
+    \vspace*{2.1cm}
+    {\color{white}\fontsize{26}{32}\selectfont\bfseries #1\par}
+    \vspace{0.35cm}
+    {\color{white!82}\Large #2\par}
+  \end{frame}
+}
+
+\title{ISO 26430-6 标准详解}
+\subtitle{以本项目代码为例理解 Auditorium Security Messages}
+\author{Beamer 讲稿}
+\date{2026-04-21}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[Paper] (current page.south west) rectangle (current page.north east);
+    \fill[BrandRed] (current page.south west) rectangle ([xshift=0.27\paperwidth]current page.north west);
+    \fill[BrandInk] ([xshift=0.27\paperwidth]current page.south west) rectangle (current page.north east);
+    \fill[BrandGold,opacity=0.20] ([xshift=0.13\paperwidth,yshift=0.16\paperheight]current page.south west) circle (1.9cm);
+    \fill[white,opacity=0.06] ([xshift=0.82\paperwidth,yshift=0.76\paperheight]current page.south west) circle (2.2cm);
+    \fill[white,opacity=0.08] ([xshift=0.75\paperwidth,yshift=0.24\paperheight]current page.south west) circle (1.2cm);
+  \end{tikzpicture}
+
+  \vspace*{0.7cm}
+  \hspace*{0.72cm}
+  \begin{minipage}[t]{0.22\paperwidth}
+    {\color{white}\fontsize{28}{34}\selectfont\bfseries ISO}
+
+    \vspace{0.18cm}
+    {\color{white}\fontsize{17}{22}\selectfont 26430-6\\审计与链路安全}
+  \end{minipage}
+  \hspace{0.05\paperwidth}
+  \begin{minipage}[t]{0.57\paperwidth}
+    \vspace{0.18cm}
+    {\color{white}\fontsize{24}{30}\selectfont\bfseries 用一个可运行原型\\讲清标准的骨架与边界\par}
+    \vspace{0.28cm}
+    {\color{white!84}\normalsize 这不是一份抽象导读，而是把条款、线协议、TLS 约束、命令语义和当前实现一一对上。\par}
+    \vspace{0.42cm}
+
+    \begin{tikzpicture}
+      \node[fill=white,rounded corners=12pt,text width=0.29\paperwidth,inner sep=10pt,align=left]{
+        \textcolor{BrandInk}{\bfseries 例子来源}\\[0.2cm]
+        \textcolor{Mute}{仓库实现了 ISO 26430-6 的协议级原型，包含 TlsProfile、KLV 编解码、ASM 命令服务、测试和黄金向量。}
+      };
+    \end{tikzpicture}
+
+    \vspace{0.28cm}
+    {\color{white!70}\small references / docs / src / tests}
+  \end{minipage}
+\end{frame}
+
+\begin{frame}{这份标准在管什么}
+  \FrameAccent
+  \TopTag{Positioning}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.52\textwidth}
+    \begin{block}{标准对象}
+      \small
+      \begin{itemize}
+        \item 面向 D-Cinema 场景中的 \textbf{Auditorium Security Messages}
+        \item 规定 Initiator 和 Responder 之间的安全消息传输方式
+        \item 重点不是“业务流程”，而是 \textbf{跨设备互操作的消息规范}
+      \end{itemize}
+    \end{block}
+    \column{0.44\textwidth}
+    \begin{block}{标准结构}
+      \small
+      \begin{itemize}
+        \item 第 6 章：TLS、KLV、通用元素、RRP 约束
+        \item 第 7 章：通用命令
+        \item 第 8 章：Link Encryption 命令
+        \item Annex A：每类命令对应的 UL
+      \end{itemize}
+    \end{block}
+  \end{columns}
+  \vspace{0.25cm}
+  \begin{tikzpicture}
+    \node[fill=Card,draw=Soft,rounded corners=12pt,inner sep=12pt,text width=0.94\textwidth]{
+      \textbf{读法建议：}把这份标准理解为“在 TLS 通道中传输一组固定 KLV 包格式的命令集合”。项目代码正好能把这三层拆开看清楚。
+    };
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{从标准目录看主线}
+  \FrameAccent
+  \TopTag{Outline}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.48\textwidth}
+    \begin{block}{第 6 章}
+      \small
+      \begin{itemize}
+        \item 6.1 TLS 约束
+        \item 6.2 KLV 固定长包
+        \item 6.3 Request\_ID、Response、Batch
+        \item 6.4 同步 RRP、端口 1173、互认证
+      \end{itemize}
+    \end{block}
+    \column{0.48\textwidth}
+    \begin{block}{第 7 至 8 章}
+      \small
+      \begin{itemize}
+        \item 7.1 BadRequest Response
+        \item 7.2--7.5 GetTime / Event / QuerySPB
+        \item 8.1--8.5 LEKeyLoad / Query / Purge
+      \end{itemize}
+    \end{block}
+  \end{columns}
+  \vspace{0.28cm}
+  \begin{tikzpicture}[
+    node distance=0.35cm,
+    box/.style={rounded corners=10pt,minimum width=2.25cm,minimum height=1.0cm,align=center,inner sep=6pt},
+    arrow/.style={-latex,thick,draw=BrandInk!70}
+  ]
+    \node[box,fill=BrandInk,text=white] (tls) {TLS};
+    \node[box,fill=BrandBlue!15,draw=BrandBlue,right=of tls] (klv) {KLV};
+    \node[box,fill=BrandRed!14,draw=BrandRed,right=of klv] (rrp) {RRP};
+    \node[box,fill=BrandGold!18,draw=BrandGold,right=of rrp] (cmd) {命令语义};
+    \draw[arrow] (tls) -- (klv);
+    \draw[arrow] (klv) -- (rrp);
+    \draw[arrow] (rrp) -- (cmd);
+  \end{tikzpicture}
+\end{frame}
+
+\SectionPage{1. 传输与安全层}{第 6 章先规定消息跑在什么样的通道里}
+
+\begin{frame}{6.1 TLS 约束}
+  \FrameAccent
+  \TopTag{TLS}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.49\textwidth}
+    \begin{block}{标准要求}
+      \small
+      \begin{itemize}
+        \item TLS 1.0
+        \item 双向证书认证
+        \item 唯一 cipher suite: \Code{TLS\_RSA\_WITH\_AES\_128\_CBC\_SHA}
+        \item 仅支持 RSA 2048 / exponent 65537
+        \item 无压缩
+        \item TLS record size = 512 bytes
+      \end{itemize}
+    \end{block}
+    \column{0.49\textwidth}
+    \begin{block}{本项目对应}
+      \small
+      \begin{itemize}
+        \item \Path{src/security/tls\_profile.cpp}
+        \item \Path{src/security/certificate\_utils.cpp}
+        \item \Path{tests/test\_tls.cpp}
+      \end{itemize}
+      \vspace{0.15cm}
+      已实现：TLS 1.0、单一 cipher、禁压缩、互认证、最小 RSA 约束。\\
+      \footnotesize 未实现：完整 D-Cinema 证书 profile、512-byte record、显式 ChangeCipherSpec 特殊处理。
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{代码例子：TlsProfile 如何把条款落地}
+  \FrameAccent
+  \TopTag{Code}
+  {\scriptsize
+  \begin{block}{来自 \Path{src/security/tls\_profile.cpp}}
+\begin{verbatim}
+expect(SSL_CTX_set_cipher_list(ctx, "AES128-SHA"), ...);
+expect(SSL_CTX_set_min_proto_version(ctx, TLS1_VERSION), ...);
+expect(SSL_CTX_set_max_proto_version(ctx, TLS1_VERSION), ...);
+SSL_CTX_set_options(ctx, SSL_OP_NO_COMPRESSION);
+verify_mode = SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
+\end{verbatim}
+  \end{block}
+  }
+  \vspace{0.15cm}
+  \begin{block}{应该怎么理解}
+    \small
+    \begin{itemize}
+      \item 这段代码不是“OpenSSL 调参”，而是在把标准里的通信约束硬编码成互操作基线。
+      \item 这里能直接回答“项目为何能说自己部分符合 6.1”。
+      \item 但它也说明：只校验到 RSA/2048/65537，不等于完整满足 D-Cinema 证书规范。
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{6.4 RRP 约束和端口要求}
+  \FrameAccent
+  \TopTag{RRP}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.48\textwidth}
+    \begin{block}{标准要求}
+      \small
+      \begin{itemize}
+        \item 使用同步 \textbf{Request-Response Pair}
+        \item 同一对 SPB 之间，一个 RRP 完成后再开下一个
+        \item 使用 well-known port \Code{1173}
+        \item 忙时允许返回 busy
+      \end{itemize}
+    \end{block}
+    \column{0.48\textwidth}
+    \begin{block}{本项目对应}
+      \small
+      \begin{itemize}
+        \item \Path{src/apps/asm\_responder.cpp} 默认端口 1173
+        \item \Path{src/transport/tls\_server.cpp} 每次读取一条 request 再写回一条 response
+        \item 当前没有真正的 busy 处理路径
+      \end{itemize}
+    \end{block}
+  \end{columns}
+  \vspace{0.25cm}
+  \begin{tikzpicture}
+    \node[fill=BrandInk,rounded corners=14pt,text=white,inner sep=12pt,text width=0.94\textwidth]{
+      \small
+      \textbf{关键理解：}ISO 26430-6 不是定义一套异步消息总线，而是定义“在 TLS socket 上做同步问答”的设备间安全控制协议。
+    };
+  \end{tikzpicture}
+\end{frame}
+
+\SectionPage{2. KLV 与通用元素}{6.2 与 6.3 决定每条消息长什么样}
+
+\begin{frame}{6.2 KLV：为什么这份标准适合做字节级测试}
+  \FrameAccent
+  \TopTag{KLV}
+  \begin{block}{标准要求}
+    \small
+    Request / Response 都是 KLV 包，Key 是 16-byte UL，Length 是固定 4-byte long-form BER，Value 里只放字段值。
+  \end{block}
+  \vspace{0.2cm}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.54\textwidth}
+    \begin{block}{本项目拆分方式}
+      \small
+      \begin{itemize}
+        \item \Path{src/klv/klv.cpp} 负责纯 KLV 编解码
+        \item \Path{src/asm/codec.cpp} 负责命令 UL 和字段拼接
+        \item \Path{tests/test\_codec.cpp} 做字节级回归
+      \end{itemize}
+    \end{block}
+    \column{0.42\textwidth}
+    \begin{block}{带来的好处}
+      \small
+      \begin{itemize}
+        \item 标准是否被破坏，一眼看十六进制就知道
+        \item 互操作联调时不依赖“解释正确”
+        \item 适合做黄金向量冻结
+      \end{itemize}
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{标准帧例子：GetTime Request}
+  \FrameAccent
+  \TopTag{Vector}
+  \begin{block}{来自 \Path{docs/protocol-vectors.md}}
+\begin{verbatim}
+060e2b340205010102070102100000008300000400000001
+\end{verbatim}
+  \end{block}
+  \vspace{0.15cm}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.48\textwidth}
+    \begin{block}{拆开看}
+      \small
+      \begin{itemize}
+        \item 前 16 字节：UL，对应 GetTime Request
+        \item 接着 4 字节：\Code{83 00 00 04}
+        \item Value：只有 4-byte \Code{Request\_ID = 1}
+      \end{itemize}
+    \end{block}
+    \column{0.48\textwidth}
+    \begin{block}{标准意义}
+      \small
+      这正是 6.2 和 6.3 的结合：\\
+      Key 决定命令类型，Length 决定包长，Value 放固定字段，所有多字节整数都用 big-endian。
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{6.3 通用元素：Request\_ID、Response、Batch}
+  \FrameAccent
+  \TopTag{Elements}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.49\textwidth}
+    \begin{block}{三件最重要的事}
+      \small
+      \begin{itemize}
+        \item \Code{Request\_ID} 非零，Response 必须回显
+        \item Response code 统一为 successful / failed / invalid / busy
+        \item Batch 一律是 8-byte 头 + 固定 item 长度 + n 个 item
+      \end{itemize}
+    \end{block}
+    \column{0.49\textwidth}
+    \begin{block}{代码映射}
+      \small
+      \begin{itemize}
+        \item \Path{include/asm/common.hpp}
+        \item \Path{src/asm/codec.cpp}
+        \item \Path{src/asm/event\_log.cpp}
+        \item \Path{src/asm/le\_key.cpp}
+      \end{itemize}
+    \end{block}
+  \end{columns}
+  \vspace{0.2cm}
+  \begin{block}{例子}
+    \small
+    \Code{EventIDBatch} 和 \Code{LEKeyIDBatch} 都用同一批处理思路：先写数量，再写单项长度，再写元素序列。这就是标准把“可扩展列表”做成可预测字节布局的方法。
+  \end{block}
+\end{frame}
+
+\SectionPage{3. 第 7 章通用命令}{这些命令和设备类型无关，是 ASM 的基本能力}
+
+\begin{frame}{7.1--7.5 通用命令一览}
+  \FrameAccent
+  \TopTag{General}
+  \scriptsize
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.18\textwidth} >{\raggedright\arraybackslash}p{0.23\textwidth} >{\raggedright\arraybackslash}p{0.51\textwidth}}
+    \toprule
+    命令 & 标准作用 & 本项目实现 \\
+    \midrule
+    BadRequest & 请求无法按原命令回应时的兜底响应 & 支持未知 UL、解码失败、\Code{Request\_ID=0} \\
+    GetTime & 取 Responder 当前 UTC 秒数 & 返回 \Code{Uint64 epoch} \\
+    GetEventList & 按时间窗返回事件 ID 集合 & 返回 \Code{EventIDBatch} \\
+    GetEventID & 按 ID 取单条日志记录 & 当前返回 XML 文本 \\
+    QuerySPB & 查询 SPB 协议版本和状态 & 返回 \Code{Protocol\_Ver + Status} \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.22cm}
+  \begin{block}{读标准时的抓手}
+    \small
+    第 7 章真正重要的不是命令名字，而是每条命令都严格服从第 6 章定义的公共外壳。
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{服务层例子：AsmService 如何分发通用命令}
+  \FrameAccent
+  \TopTag{Dispatch}
+  {\scriptsize
+  \begin{block}{来自 \Path{src/asm/service.cpp}}
+\begin{verbatim}
+switch (request.command) {
+  case Command::get_time: return handle_get_time(request);
+  case Command::get_event_list: return handle_get_event_list(request);
+  case Command::get_event_id: return handle_get_event_id(request);
+  case Command::query_spb: return handle_query_spb(request);
+  ...
+}
+\end{verbatim}
+  \end{block}
+  }
+  \vspace{0.15cm}
+  \begin{block}{标准视角下的意义}
+    \footnotesize
+    \begin{itemize}
+      \item 第 6 章把“统一壳”定死，第 7/8 章只定义 payload 语义。
+      \item 所以服务层天然长成“先识别命令，再交给各自 payload handler”的样子。
+      \item 这也是为什么本项目能把 \Path{Codec}、\Path{EventLog}、\Path{LEKey} 分层拆开。
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{GetEventList / GetEventID：标准把日志抓取拆成两步}
+  \FrameAccent
+  \TopTag{Events}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.46\textwidth}
+    \begin{block}{标准设计}
+      \small
+      \begin{itemize}
+        \item 先按时间窗拿 ID 列表
+        \item 再逐条按 ID 取日志正文
+        \item 好处是避免一次返回巨量日志文本
+      \end{itemize}
+    \end{block}
+    \column{0.5\textwidth}
+    \begin{block}{本项目实现}
+      \small
+      \begin{itemize}
+        \item \footnotesize \Path{src/asm/event\_log.cpp} 提供 \Code{list\_event\_ids()} 和 \Code{get\_event\_xml()}
+        \item 默认事件样例包括：
+        \item \Code{Responder started}
+        \item \Code{TLS profile uses development CA}
+        \item \Code{Link encryption material not loaded}
+      \end{itemize}
+    \end{block}
+  \end{columns}
+  \vspace{0.2cm}
+  \begin{block}{实现边界}
+    \small
+    \footnotesize 当前 XML 只是“对齐 Text Log Record 字段语义”的原型，不是完整 SMPTE 430-5 signed log pipeline。
+  \end{block}
+\end{frame}
+
+\SectionPage{4. 第 8 章 LE 命令}{这部分把链路加密密钥管理做成一组明确 RRP}
+
+\begin{frame}{8.1--8.5 LE 命令一览}
+  \FrameAccent
+  \TopTag{LEKey}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.2\textwidth} >{\raggedright\arraybackslash}p{0.25\textwidth} >{\raggedright\arraybackslash}p{0.42\textwidth}}
+    \toprule
+    命令 & 标准作用 & 本项目做法 \\
+    \midrule
+    LEKeyLoad & 下发一批 LE key & 32-byte item，支持 overflow 返回 failed \\
+    LEKeyQueryID & 查某个 key 是否存在 & 返回 \Code{KeyPresent} \\
+    LEKeyQueryAll & 枚举全部活动 key ID & 返回 \Code{LEKeyIDBatch} \\
+    LEKeyPurgeID & 删除一个 key & 返回 \Code{NoKeyID}，但 Response 仍 successful \\
+    LEKeyPurgeAll & 删除全部 key & 返回最小成功响应 \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.22cm}
+  \begin{block}{关键点}
+    \small
+    标准并不定义真正的加密硬件实现，而是定义“管理接口的线协议”。这也是项目能用 mock key store 先把协议跑通的原因。
+  \end{block}
+\end{frame}
+
+\begin{frame}{为什么 LEKeyLoad 的 batch 设计很重要}
+  \FrameAccent
+  \TopTag{Batch}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.48\textwidth}
+    \begin{block}{单项结构}
+      \small
+      \begin{itemize}
+        \item LE Key ID: 4 bytes
+        \item Key: 16 bytes
+        \item Expire Time: 4 bytes
+        \item Attribute Data: 8 bytes
+      \end{itemize}
+      合计正好 32 bytes。
+    \end{block}
+    \column{0.48\textwidth}
+    \begin{block}{本项目对应}
+      \small
+      \begin{itemize}
+        \item \Path{src/asm/le\_key.cpp} 按标准顺序拼包
+        \item 支持至少 16 个 key 的容量约束
+        \item 超容量时 \Code{Overflow != 0} 且 \Code{Response = failed}
+      \end{itemize}
+    \end{block}
+  \end{columns}
+  \vspace{0.2cm}
+  \begin{block}{这页想说明什么}
+    \small
+    第 8 章不是“随便定义几个密钥接口”，而是在用严格固定长度的 item 设计，把批量装载、存在性查询和清除语义变成可互操作的线协议。
+  \end{block}
+\end{frame}
+
+\SectionPage{5. 用代码把标准读透}{这个仓库最有价值的地方，是它把标准拆成了可测试的模块}
+
+\begin{frame}{项目模块和标准条款的对应关系}
+  \FrameAccent
+  \TopTag{Mapping}
+  \scriptsize
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.18\textwidth} >{\raggedright\arraybackslash}p{0.29\textwidth} >{\raggedright\arraybackslash}p{0.39\textwidth}}
+    \toprule
+    模块 & 主要文件 & 对应标准 \\
+    \midrule
+    transport & \Path{tls\_server.cpp}, \Path{tls\_client.cpp} & 6.1, 6.4 \\
+    security & \Path{tls\_profile.cpp}, \Path{certificate\_utils.cpp} & 6.1 \\
+    klv & \Path{klv.cpp} & 6.2 \\
+    asm::Codec & \Path{codec.cpp} & 6.3 + Annex A \\
+    asm::EventLog & \Path{event\_log.cpp} & 7.3, 7.4 \\
+    asm::QuerySPB & \Path{query\_spb.cpp} & 7.5 \\
+    asm::LEKey & \Path{le\_key.cpp} & 8.1--8.5 \\
+    asm::AsmService & \Path{service.cpp} & 第 7、8 章总分发 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{为什么测试在这类标准实现里特别重要}
+  \FrameAccent
+  \TopTag{Tests}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.48\textwidth}
+    \begin{block}{本项目测试层}
+      \small
+      \begin{itemize}
+        \item \Path{tests/test\_codec.cpp}
+        \item \Path{tests/test\_service.cpp}
+        \item \Path{tests/test\_tls.cpp}
+        \item \Path{docs/protocol-vectors.md}
+      \end{itemize}
+    \end{block}
+    \column{0.48\textwidth}
+    \begin{block}{它们分别证明什么}
+      \small
+      \begin{itemize}
+        \item 编码没有漂移
+        \item 命令语义没有写歪
+        \item TLS 约束不是文档口头声明
+        \item 互操作联调有固定基线
+      \end{itemize}
+    \end{block}
+  \end{columns}
+  \vspace{0.25cm}
+  \begin{tikzpicture}
+    \node[fill=Card,draw=Soft,rounded corners=12pt,inner sep=12pt,text width=0.94\textwidth]{
+      \small
+      \textbf{这类标准实现最怕什么？}最怕“看起来懂了标准，但字节布局悄悄变了”。黄金向量和集成测试正是防这个。
+    };
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{标准理解和当前实现边界}
+  \FrameAccent
+  \TopTag{Boundary}
+  \begin{columns}[T,totalwidth=\textwidth]
+    \column{0.49\textwidth}
+    \begin{block}{已经对齐的骨架}
+      \small
+      \begin{itemize}
+        \item TLS 1.0 + 单一 cipher
+        \item KLV 固定 4-byte BER
+        \item Annex A UL 映射
+        \item 第 7 章通用命令
+        \item 第 8 章 LE 命令
+      \end{itemize}
+    \end{block}
+    \column{0.49\textwidth}
+    \begin{block}{仍然是原型的部分}
+      \small
+      \begin{itemize}
+        \item 完整 D-Cinema X.509 profile
+        \item TLS 512-byte record 强制
+        \item ChangeCipherSpec 显式特殊处理
+        \item SMPTE 430-5 签名日志
+        \item 真实安全模块和真实链路加密后端
+      \end{itemize}
+    \end{block}
+  \end{columns}
+  \vspace{0.22cm}
+  \begin{block}{所以这份项目最适合拿来做什么}
+    \small
+    适合拿来学习标准、验证字节级协议、做互操作起步样机；不应直接包装成“完整影院生产实现”。
+  \end{block}
+\end{frame}
+
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[BrandInk] (current page.south west) rectangle (current page.north east);
+    \fill[BrandRed] (current page.south west) rectangle ([xshift=0.22\paperwidth]current page.north west);
+    \fill[BrandGold,opacity=0.14] ([xshift=0.78\paperwidth,yshift=0.74\paperheight]current page.south west) circle (1.9cm);
+    \fill[white,opacity=0.08] ([xshift=0.7\paperwidth,yshift=0.24\paperheight]current page.south west) circle (1.25cm);
+  \end{tikzpicture}
+  \vspace*{1.9cm}
+  \hspace*{0.7cm}
+  \begin{minipage}{0.72\paperwidth}
+    {\color{white}\fontsize{26}{32}\selectfont\bfseries 回看这份标准，最重要的不是记住命令名\par}
+    \vspace{0.35cm}
+    {\color{white!82}\Large 而是理解它如何把 TLS、KLV、RRP 和命令语义拼成一套可互操作的安全消息协议。\par}
+    \vspace{0.7cm}
+    {\color{white!70}\large 本项目的价值就在于：它把这个拼接过程写成了可运行、可测试、可检查的代码。}
+  \end{minipage}
+\end{frame}
+
+\end{document}
