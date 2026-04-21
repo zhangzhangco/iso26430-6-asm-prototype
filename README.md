@@ -24,27 +24,6 @@ This repository is intended for:
 
 This repository is not intended to claim full production compliance with the complete D-Cinema operational environment.
 
-## Suggested GitHub Description
-
-`Protocol-aligned C++ reference prototype for ISO 26430-6 Auditorium Security Messages (ASM), covering TLS 1.0, KLV framing, general ASM commands, and LEKey flows.`
-
-## Suggested GitHub Topics
-
-If you publish this repo to GitHub, these topics are worth setting:
-
-- `iso26430-6`
-- `d-cinema`
-- `digital-cinema`
-- `auditorium-security-messages`
-- `asm`
-- `klv`
-- `tls`
-- `openssl`
-- `interoperability`
-- `c-plus-plus`
-
-这些 topic 不是 GitHub 自动从代码里稳定推断出来的，通常需要仓库创建后显式设置；设置好以后，外部检索和 GitHub 站内发现都会明显更友好。
-
 ## 当前实现范围
 
 - `C++20 + OpenSSL + CMake`
@@ -218,9 +197,3 @@ LE key 文件每行一个对象：
 - 约束矩阵：`docs/constraints.md`
 - 协议黄金向量：`docs/protocol-vectors.md`
 - 实现说明：`docs/iso26430-6-asm-implementation.md`
-
-## Search Hints
-
-如果你是通过 GitHub 搜到这个仓库，下面这些词和本仓库高度相关：
-
-`ISO 26430-6`, `Auditorium Security Messages`, `ASM`, `D-Cinema`, `digital cinema security`, `KLV`, `TLS 1.0`, `LEKey`, `QuerySPB`, `interoperability test`.
